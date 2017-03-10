@@ -12,6 +12,7 @@ public class MyConst {
     private static Map<Double, Integer> axletree_working_life = new HashMap<Double, Integer>();
 
     private static void setAxletree_working_life() {
+        axletree_working_life.put(0.00, 0);
         axletree_working_life.put(0.10, 1000 * 60);
         axletree_working_life.put(0.23, 1100 * 60);
         axletree_working_life.put(0.48, 1200 * 60);
@@ -34,6 +35,7 @@ public class MyConst {
     private static Map<Double, Integer> reach_time = new HashMap<Double, Integer>();
 
     private static void setReach_time() {
+        reach_time.put(0.0, 0);
         reach_time.put(0.6, 5);
         reach_time.put(0.9, 10);
         reach_time.put(1.0, 15);
@@ -51,6 +53,8 @@ public class MyConst {
     private static int stop_loss = 10;
     //轴承价格
     private static int axletree_price = 32;
+    //模拟工作时间
+    private static int total_time = 20000 * 60;
 
     public static int getWage() {
         return wage;
@@ -62,6 +66,10 @@ public class MyConst {
 
     public static int getAxletree_price() {
         return axletree_price;
+    }
+
+    public static int getTotal_time() {
+        return total_time;
     }
 
     //轴承更换时间
