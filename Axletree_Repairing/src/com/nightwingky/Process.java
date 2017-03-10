@@ -1,5 +1,8 @@
 package com.nightwingky;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -68,12 +71,122 @@ public class Process {
     }
 
     //坏1换1流程
-    public void process1_1() {
+    public void process1_1() throws IOException {
 
+        time += life_axletree[2];
+
+        while (time <= MyConst.getTotal_time() * 60) {
+            //确定三者中最小寿命
+            int min = life_axletree[0];
+            int num = 0;
+            for (int i = 0; i < life_axletree.length; i++) {
+                if (life_axletree[i] < min) {
+                    min = life_axletree[i];
+                    num = i;
+                }
+            }
+
+            //三个轴承减去最小寿命
+            for (int i = 0; i < life_axletree.length; i++) {
+                life_axletree[i] = life_axletree[i] - min;
+            }
+
+            this.mList = new ArrayList<String>();
+            this.mList.add(String.valueOf(time / 60.00));
+            reach_probability = random.nextDouble();
+            //获取reach_time中的key值
+            Set<Double> reach_time_key_set = this.reach_time_map.keySet();
+            //Set转List
+            List<Double> reach_time_key = new ArrayList<Double>(reach_time_key_set);
+            //确定等待时间
+            for (int i = 0; i < reach_time_key.size(); i++) {
+                if (reach_probability != 1) {
+                    if (reach_probability >= reach_time_key.get(i) &&
+                            reach_probability < reach_time_key.get(i + 1)) {
+                        reach_probability = reach_time_key.get(i + 1);
+                        reach_time = reach_time_map.get(reach_probability);
+                        break;
+                    }
+                } else {
+                    reach_time = reach_time_map.get(
+                            reach_time_key.get(
+                                    reach_time_key.size()
+                            )
+                    );
+                }
+            }
+            //添加等待时间
+            time += reach_time;
+            this.mList.add(String.valueOf(reach_time));
+            //添加等待成本和机器停工损失
+            this.total_cost = this.total_cost + MyConst.getStop_loss() * (
+                    reach_time + MyConst.getChange_time().get(1));
+            //添加换轴承成本
+            this.total_cost = this.total_cost + MyConst.getAxletree_price();
+            //添加工作人员工资
+            this.total_cost = this.total_cost + MyConst.getWage()
+                    * MyConst.getChange_time().get(1);
+
+            //添加停工时间
+            time += MyConst.getChange_time().get(1);
+            this.mList.add(String.valueOf(MyConst.getChange_time().get(1)));
+
+            //添加累计成本
+            this.mList.add(String.valueOf(total_cost));
+
+            //模拟概率
+            life_probability = random.nextDouble();
+            //获取key值
+            Set<Double> axletree_life_key_set = this.axletree_life_map.keySet();
+            List<Double> axletree_life_key = new ArrayList<Double>(axletree_life_key_set);
+            //确定新轴承寿命
+            while (true) {
+                for (int j = 0; j < axletree_life_key.size(); j++) {
+                    if (life_probability != 1) {
+                        if (life_probability >= axletree_life_key.get(j)
+                                && life_probability < axletree_life_key.get(j + 1)) {
+                            life_probability = axletree_life_key.get(j + 1);
+                            life_axletree[num] = axletree_life_map.get(life_probability);
+                            break;
+                        }
+                    } else {
+                        life_axletree[num] = axletree_life_map.get(
+                                axletree_life_key.get(
+                                        axletree_life_key.size()
+                                )
+                        );
+                    }
+                }
+                //保证只有一个轴承坏，即数组中元素不重复
+                Set<Integer> set = new HashSet<Integer>();
+                for (int a : life_axletree) {
+                    set.add(a);
+                }
+                if (set.size() == life_axletree.length) {
+                    break;
+                }
+            }
+
+            mList.add(life_axletree[0] / 60 + "," + life_axletree[1] / 60 + "," +
+                            life_axletree[2] / 60);
+            //确定三者中最小寿命
+            min = life_axletree[0];
+            for (int x : life_axletree) {
+                if (x < min) {
+                    min = x;
+                }
+            }
+            //加入总时间
+            time += min;
+            data_process1_1.add(mList);
+        }
+
+        System.out.println("坏1换1方案：");
+        printList(data_process1_1, "plan1_1.html");
     }
 
     //坏1换3流程
-    public void process1_3() {
+    public void process1_3() throws IOException {
         time += life_axletree[2];
 
         while (time <= MyConst.getTotal_time() * 60) {
@@ -164,13 +277,47 @@ public class Process {
         }
 
         System.out.println("坏1换3方案：");
-        printList(data_process1_3);
+        printList(data_process1_3, "plan1_3.html");
     }
 
-    //控制台打印结果
-    private void printList(List<List<String>> dataList) {
+    //打印结果
+    private void printList(List<List<String>> dataList, String title) throws IOException {
+        //控制台输出
         for (List<String> l : dataList) {
             System.out.println(l);
         }
+
+        //文件输出
+        String path = title;
+
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<h2>信管14-2&nbsp;&nbsp;140614406&nbsp;&nbsp;阙琨洋</h2>\n<h3>轴承修理模拟" + title + "</h3>");
+        sb.append("<html>\n<table border=\"2\">\n");
+        fileOutputStream.write(sb.toString().getBytes("utf-8"));
+
+        for (List<String> m : dataList) {
+            sb = new StringBuilder();
+            sb.append("<tr>");
+            for (String s : m) {
+                sb.append("<td>" + s + "</td>");
+            }
+            sb.append("</tr>\n");
+            fileOutputStream.write(sb.toString().getBytes("utf-8"));
+        }
+
+        sb = new StringBuilder();
+        sb.append("</html>\n</table>\n");
+        fileOutputStream.write(sb.toString().getBytes("utf-8"));
+
+        fileOutputStream.close();
+
     }
+
 }
