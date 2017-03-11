@@ -5,8 +5,6 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-	// write your code here
-        new Process().process1_1();
-        new Process().process1_3();
+        new Process().getResult();
     }
 }
