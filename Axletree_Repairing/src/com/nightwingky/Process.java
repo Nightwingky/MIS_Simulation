@@ -171,7 +171,7 @@ public class Process {
                 }
             }
 
-            mList.add(life_axletree[0] / 60 + "," + life_axletree[1] / 60 + "," +
+            mList.add(life_axletree[0] / 60 + "/" + life_axletree[1] / 60 + "/" +
                             life_axletree[2] / 60);
             //确定三者中最小寿命
             min = life_axletree[0];
@@ -269,8 +269,8 @@ public class Process {
             }
 
             mList.add(
-                    life_axletree[0] / 60 + "," +
-                    life_axletree[1] / 60 + "," +
+                    life_axletree[0] / 60 + "/" +
+                    life_axletree[1] / 60 + "/" +
                     life_axletree[2] / 60);
             //确定三者中最小寿命
             int min = life_axletree[0];
@@ -293,9 +293,9 @@ public class Process {
     //打印结果
     private void printList(List<List<String>> dataList, String title) throws IOException {
         //控制台输出
-//        for (List<String> l : dataList) {
-//            System.out.println(l);
-//        }
+        for (List<String> l : dataList) {
+            System.out.println(l);
+        }
 
         //文件输出
         String path = title;
