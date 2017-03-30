@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by nightwingky on 17-3-30.
  */
-public class BaseProcess implements EventIntf{
+public class BaseProcess implements EventIntf {
 
     protected List<DiscreteEventVO> eventList; //事件链表
     protected List<CustomerVO> queue; //单队伍链表
@@ -59,7 +59,7 @@ public class BaseProcess implements EventIntf{
             simulationClock = currentEvent.getTime();
             eventList.remove(currentEvent);
         } else {
-            System.out.println("Eventlist is empty");
+            System.out.println("事件列表为空");
         }
     }
 
@@ -88,7 +88,7 @@ public class BaseProcess implements EventIntf{
         }
     }
 
-    public void run() {
+    public ResultVO run() {
         simulation();
 
         ResultVO resultVO = new ResultVO(
@@ -99,6 +99,8 @@ public class BaseProcess implements EventIntf{
         );
 
         System.out.println(resultVO);
+
+        return resultVO;
     }
 
     @Override
