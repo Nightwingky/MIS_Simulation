@@ -11,6 +11,8 @@ public class Process1 extends BaseProcess{
 
     @Override
     public void arrival() {
+        super.arrival();
+
         CustomerVO customerVO = new CustomerVO();
         customerVO.setArrivalTime(simulationClock);
         customerVO.setServiceTime(MyRandomNum.getUnif(8, 10));
@@ -47,6 +49,8 @@ public class Process1 extends BaseProcess{
 
     @Override
     public void departure() {
+        super.departure();
+
         CustomerVO c = onService[currentEvent.getQueueNo()];
         onService[currentEvent.getQueueNo()] = null;
 
@@ -70,6 +74,8 @@ public class Process1 extends BaseProcess{
 
     @Override
     public void queueRun() {
+        super.queueRun();
+
         this.onService = new CustomerVO[3];
 
         for (int i = 0; i < 3; i++)  {
@@ -80,9 +86,5 @@ public class Process1 extends BaseProcess{
 
             this.onService[i] = null;
         }
-    }
-
-    public void run() {
-        double totalMean = 0;
     }
 }

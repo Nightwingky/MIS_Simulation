@@ -2,6 +2,7 @@ package com.nightwingky.simulation;
 
 import com.nightwingky.vo.CustomerVO;
 import com.nightwingky.vo.DiscreteEventVO;
+import com.nightwingky.vo.ResultVO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +86,19 @@ public class BaseProcess implements EventIntf{
                     break;
             }
         }
+    }
+
+    public void run() {
+        simulation();
+
+        ResultVO resultVO = new ResultVO(
+                totalStayTime / totalCustomerCount,
+                totalStayTime,
+                totalCustomerCount,
+                simulationClock
+        );
+
+        System.out.println(resultVO);
     }
 
     @Override
