@@ -22,10 +22,10 @@ public class Main {
 
         FileOutputStream fileOutputStream = new FileOutputStream(file, false);
         StringBuilder sb = new StringBuilder();
-        sb.append("<html>\n<h2>信管14-2&nbsp;&nbsp;140614406&nbsp;&nbsp;阙琨洋</h2>\n");
+        sb.append("<html>\n<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"></head>\n<h2>信管14-2&nbsp;&nbsp;140614406&nbsp;&nbsp;阙琨洋</h2>\n");
 
         sb.append("<table border=\"2\">\n<tr><th>模拟次数</th><th>平均逗留时间</th><th>总逗留时间</th><th>顾客人数</th>");
-        fileOutputStream.write(sb.toString().getBytes("utf-8"));
+        fileOutputStream.write(sb.toString().getBytes("gb2312"));
 
         int num = 1;
 
@@ -36,12 +36,13 @@ public class Main {
                     "<td>" + r.getTotalStayTime() + "</td>" +
                     "<td>" + r.getTotalCustomerCount() + "</td></tr>\n"
             );
-            fileOutputStream.write(sb.toString().getBytes("utf-8"));
+            fileOutputStream.write(sb.toString().getBytes("gb2312"));
+            num++;
         }
 
         sb = new StringBuilder();
         sb.append("</table>\n</html>\n");
-        fileOutputStream.write(sb.toString().getBytes("utf-8"));
+        fileOutputStream.write(sb.toString().getBytes("gb2312"));
 
         fileOutputStream.close();
     }
