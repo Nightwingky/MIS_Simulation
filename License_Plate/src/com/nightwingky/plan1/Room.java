@@ -28,10 +28,11 @@ public class Room extends Thread {
         }
     }
 
-    @Override
-    public void run() {
-        super.run();
+    public static void main(String[] args) throws InterruptedException {
+        new Room().addClient();
+    }
 
+    private void addClient() throws InterruptedException {
         QueueList list1 = new QueueList();
         Thread threadList1 = new Thread(list1, "threadList1");
         threadList1.start();
@@ -41,9 +42,13 @@ public class Room extends Thread {
 
             CustomerVO customerVO = new CustomerVO(1, this.arrive_time_list.get(0));
             list1.addCustomer(customerVO);
+            System.out.println("add");
+
             total_time_line = this.arrive_time_list.get(0);
             list1.timeline = total_time_line;
             this.arrive_time_list.remove(0);
+
+            Thread.yield();
 
 //            if (total_time_line <= list1.timeline) {
 //                CustomerVO customerVO = new CustomerVO(1, this.arrive_time_list.get(0));
@@ -58,6 +63,17 @@ public class Room extends Thread {
 //                this.arrive_time_list.remove(0);
 //            }
 
+        }
+    }
+
+    @Override
+    public void run() {
+        super.run();
+
+        try {
+            addClient();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
