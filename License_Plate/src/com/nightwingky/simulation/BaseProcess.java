@@ -12,31 +12,25 @@ import java.util.List;
  */
 public class BaseProcess implements EventIntf {
 
-    protected List<DiscreteEventVO> eventList; //事件链表
-    protected List<CustomerVO> queue; //单队伍链表
-    protected List<CustomerVO>[] queues; //多队伍链表
-    protected CustomerVO[] onService; //服务中队伍数组_单队伍，数字对应服务人员
+    protected double simulation_clock;
+    protected double customer_total_stay_time;
 
-    protected double simulationClock; //模拟时钟
-    protected double totalStayTime; //总逗留时间
+    protected List<DiscreteEventVO> eventList;
 
-    protected DiscreteEventVO currentEvent;
-    protected int[] status; //服务人员状态，0空闲，1忙
-    protected int totalCustomerCount; //总顾客人数
+    protected CustomerVO[] on_service_customer;
+
+    protected DiscreteEventVO current;
+    protected int[] status;
+    protected int customer_amount;
 
     public BaseProcess() {
-        this.simulationClock = 0;
-        this.totalStayTime = 0;
-        this.totalCustomerCount = 0;
+        this.simulation_clock = 0;
+        this.customer_total_stay_time = 0;
+        this.customer_amount = 0;
 
         this.eventList = new ArrayList<DiscreteEventVO>();
-        this.queue = new ArrayList<CustomerVO>();
-        this.queues = new ArrayList[3];
-        this.queues[0] = new ArrayList<CustomerVO>();
-        this.queues[1] = new ArrayList<CustomerVO>();
-        this.queues[2] = new ArrayList<CustomerVO>();
 
-        this.currentEvent = null;
+        this.current = null;
 
         this.status = new int[3];
         this.status[0] = 0;
@@ -46,38 +40,38 @@ public class BaseProcess implements EventIntf {
 
     protected void timing() {
         double minTime = 1.0e+29;
-        currentEvent = null;
-        //搜索时间最小事件
-        for (DiscreteEventVO ent : eventList) {
-            if (ent.getTime() < minTime) {
-                minTime = ent.getTime();
-                currentEvent = ent;
+        current = null;
+
+        for (DiscreteEventVO eventVO : eventList) {
+            if (eventVO.getTime() < minTime) {
+                minTime = eventVO.getTime();
+                current = eventVO;
             }
         }
-        //时钟后移
-        if (currentEvent != null) {
-            simulationClock = currentEvent.getTime();
-            eventList.remove(currentEvent);
-        } else {
-            System.out.println("事件列表为空");
+
+        if (current != null) {
+            simulation_clock = current.getTime();
+            eventList.remove(current);
         }
     }
 
-    protected void occupyService(CustomerVO c) {
-        //下一离开事件
-        DiscreteEventVO ent = new DiscreteEventVO();
-        ent.setType(2);
-        ent.setTime(simulationClock + c.getServiceTime());
-        ent.setQueueNo(currentEvent.getQueueNo());
-        eventList.add(ent);
+    protected void onService(CustomerVO c) {
+
+        DiscreteEventVO eventVO = new DiscreteEventVO();
+
+        eventVO.setType(2);
+        eventVO.setTime(simulation_clock + c.getServiceTime());
+        eventVO.setQueueNo(current.getQueueNo());
+
+        eventList.add(eventVO);
     }
 
-    protected void simulation() {
-        queueRun();
+    protected void simulationStart() {
+        queueStart();
 
-        while (simulationClock <= 5000) {
+        while (simulation_clock <= 5000) {
             timing();
-            switch (currentEvent.getType()) {
+            switch (current.getType()) {
                 case 1:
                     arrival();
                     break;
@@ -89,13 +83,13 @@ public class BaseProcess implements EventIntf {
     }
 
     public ResultVO run() {
-        simulation();
+        simulationStart();
 
         ResultVO resultVO = new ResultVO(
-                totalStayTime / totalCustomerCount,
-                totalStayTime,
-                totalCustomerCount,
-                simulationClock
+                customer_total_stay_time / customer_amount,
+                customer_total_stay_time,
+                customer_amount,
+                simulation_clock
         );
 
         System.out.println(resultVO);
@@ -114,7 +108,7 @@ public class BaseProcess implements EventIntf {
     }
 
     @Override
-    public void queueRun() {
+    public void queueStart() {
 
     }
 }

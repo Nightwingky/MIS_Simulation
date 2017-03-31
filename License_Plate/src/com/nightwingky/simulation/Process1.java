@@ -4,41 +4,47 @@ import com.nightwingky.random.MyRandomNum;
 import com.nightwingky.vo.CustomerVO;
 import com.nightwingky.vo.DiscreteEventVO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by nightwingky on 17-3-30.
  */
 public class Process1 extends BaseProcess{
+
+    private List<CustomerVO> queue_process_1;
+
+    public Process1() {
+        this.queue_process_1 = new ArrayList<CustomerVO>();
+    }
 
     @Override
     public void arrival() {
         super.arrival();
 
         CustomerVO customerVO = new CustomerVO();
-        customerVO.setArrivalTime(simulationClock);
+        customerVO.setArrivalTime(simulation_clock);
         customerVO.setServiceTime(MyRandomNum.getUnif(8, 10));
         customerVO.setStatus(0);
-        queue.add(customerVO);
+        queue_process_1.add(customerVO);
 
-        //下一次arrival
         DiscreteEventVO nextArrival = new DiscreteEventVO();
         nextArrival.setType(1);
-        nextArrival.setTime(simulationClock + MyRandomNum.getExpon(10));
+        nextArrival.setTime(simulation_clock + MyRandomNum.getExpon(10));
         eventList.add(nextArrival);
 
-        //如果有服务人员空闲，开始服务当前顾客
         for (int i = 0; i < 3; i++) {
             if (status[i] == 0) {
                 status[i] = 1;
-                currentEvent.setQueueNo(i);
+                current.setQueueNo(i);
 
-                CustomerVO tmp = queue.get(0);
+                CustomerVO tmp = queue_process_1.get(0);
                 tmp.setStatus(1);
 
-                //将顾客移入服务中数组，并从队伍中移除
-                onService[i] = tmp;
-                queue.remove(0);
+                on_service_customer[i] = tmp;
+                queue_process_1.remove(0);
 
-                occupyService(tmp);
+                onService(tmp);
                 break;
             }
         }
@@ -48,40 +54,37 @@ public class Process1 extends BaseProcess{
     public void departure() {
         super.departure();
 
-        CustomerVO c = onService[currentEvent.getQueueNo()];
-        onService[currentEvent.getQueueNo()] = null;
+        CustomerVO c = on_service_customer[current.getQueueNo()];
+        on_service_customer[current.getQueueNo()] = null;
 
-        //计算总逗留时间、总顾客人数
-        totalStayTime += simulationClock - c.getArrivalTime();
-        totalCustomerCount += 1;
+        customer_total_stay_time += simulation_clock - c.getArrivalTime();
+        customer_amount += 1;
 
-        //判断队伍是否为空：若是则更改服务人员状态，若否则开始服务下一顾客
-        if (queue.size() == 0) {
-            status[currentEvent.getQueueNo()] = 0;
+        if (queue_process_1.size() == 0) {
+            status[current.getQueueNo()] = 0;
         } else {
-            CustomerVO tmp = queue.get(0);
+            CustomerVO tmp = queue_process_1.get(0);
             tmp.setStatus(1);
 
-            onService[currentEvent.getQueueNo()] = tmp;
-            queue.remove(0);
-            occupyService(tmp);
-
+            on_service_customer[current.getQueueNo()] = tmp;
+            queue_process_1.remove(0);
+            onService(tmp);
         }
     }
 
     @Override
-    public void queueRun() {
-        super.queueRun();
+    public void queueStart() {
+        super.queueStart();
 
-        this.onService = new CustomerVO[3];
+        this.on_service_customer = new CustomerVO[3];
 
         for (int i = 0; i < 3; i++)  {
             DiscreteEventVO ent = new DiscreteEventVO();
-            ent.setType(1);//到达
+            ent.setType(1);
             ent.setTime(i / 10);
             this.eventList.add(ent);
 
-            this.onService[i] = null;
+            this.on_service_customer[i] = null;
         }
     }
 }

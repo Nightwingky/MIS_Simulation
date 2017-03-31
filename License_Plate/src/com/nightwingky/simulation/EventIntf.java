@@ -9,6 +9,6 @@ public interface EventIntf {
 
     void departure();
 
-    void queueRun();
+    void queueStart();
 
 }

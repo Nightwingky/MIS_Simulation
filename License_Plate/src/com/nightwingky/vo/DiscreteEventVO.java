@@ -6,9 +6,9 @@ package com.nightwingky.vo;
  */
 public class DiscreteEventVO {
 
-    private int type; //1-到达，2-离开
+    private int type;
     private double time;
-    private int queueNo; //0,1,2
+    private int queueNo;
 
     public DiscreteEventVO() {
     }

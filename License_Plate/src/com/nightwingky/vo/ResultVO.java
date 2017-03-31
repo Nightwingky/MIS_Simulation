@@ -53,9 +53,9 @@ public class ResultVO {
     public String toString() {
         return "ResultVO{" +
                 "avgStayTime=" + avgStayTime +
-                ", totalStayTime=" + totalStayTime +
-                ", totalCustomerCount=" + totalCustomerCount +
-                ", simulationClock=" + simulationClock +
+                ", customer_total_stay_time=" + totalStayTime +
+                ", customer_amount=" + totalCustomerCount +
+                ", simulation_clock=" + simulationClock +
                 '}';
     }
 }
