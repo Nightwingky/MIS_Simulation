@@ -24,7 +24,15 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         sb.append("<html>\n<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"></head>\n<h2>信管14-2&nbsp;&nbsp;140614406&nbsp;&nbsp;阙琨洋</h2>\n");
 
-        sb.append("<table border=\"2\">\n<tr><th>模拟次数</th><th>平均逗留时间</th><th>总逗留时间</th><th>顾客人数</th>");
+        sb.append("<table border=\"2\">\n" +
+                "<tr><th>模拟次数</th>" +
+                "<th>Step1平均逗留时间</th>" +
+                "<th>Step1总逗留时间</th>" +
+                "<th>Step2平均逗留时间</th>" +
+                "<th>Step2总逗留时间</th>" +
+                "<th>平均逗留时间</th>" +
+                "<th>总逗留时间</th>" +
+                "<th>顾客人数</th>");
         fileOutputStream.write(sb.toString().getBytes("gb2312"));
 
         int num = 1;
@@ -32,6 +40,10 @@ public class Main {
         for (ResultVO r : resultVOList) {
             sb = new StringBuilder();
             sb.append("<tr><td>" + num + "</td>" +
+                    "<td>" + r.getAvgStayTimeStep1() + "</td>" +
+                    "<td>" + r.getTotalStayTimeStep1() + "</td>" +
+                    "<td>" + r.getAvgStayTimeStep2() + "</td>" +
+                    "<td>" + r.getTotalStayTimeStep2() + "</td>" +
                     "<td>" + r.getAvgStayTime() + "</td>" +
                     "<td>" + r.getTotalStayTime() + "</td>" +
                     "<td>" + r.getTotalCustomerCount() + "</td></tr>\n"

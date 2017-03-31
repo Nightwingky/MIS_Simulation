@@ -6,8 +6,9 @@ package com.nightwingky.vo;
 public class CustomerVO {
 
     private double arrivalTime;
-    private double serviceTime;
-    private int status; //是否已经开始服务，0为否，1为是
+    private double step1ServiceTime;
+    private double step2ServiceTime;
+    private int status; //是否已经开始服务，0为否，1表示step1服务，2表示step2服务
 
     public CustomerVO() {
     }
@@ -20,12 +21,20 @@ public class CustomerVO {
         this.arrivalTime = arrivalTime;
     }
 
-    public double getServiceTime() {
-        return serviceTime;
+    public double getStep1ServiceTime() {
+        return step1ServiceTime;
     }
 
-    public void setServiceTime(double serviceTime) {
-        this.serviceTime = serviceTime;
+    public void setStep1ServiceTime(double step1ServiceTime) {
+        this.step1ServiceTime = step1ServiceTime;
+    }
+
+    public double getStep2ServiceTime() {
+        return step2ServiceTime;
+    }
+
+    public void setStep2ServiceTime(double step2ServiceTime) {
+        this.step2ServiceTime = step2ServiceTime;
     }
 
     public int getStatus() {
@@ -40,7 +49,8 @@ public class CustomerVO {
     public String toString() {
         return "CustomerVO{" +
                 "arrivalTime=" + arrivalTime +
-                ", serviceTime=" + serviceTime +
+                ", step1ServiceTime=" + step1ServiceTime +
+                ", step2ServiceTime=" + step2ServiceTime +
                 ", status=" + status +
                 '}';
     }

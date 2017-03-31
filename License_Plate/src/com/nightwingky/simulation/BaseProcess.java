@@ -1,5 +1,6 @@
 package com.nightwingky.simulation;
 
+import com.nightwingky.random.MyRandomNum;
 import com.nightwingky.vo.CustomerVO;
 import com.nightwingky.vo.DiscreteEventVO;
 import com.nightwingky.vo.ResultVO;
@@ -10,10 +11,11 @@ import java.util.List;
 /**
  * Created by nightwingky on 17-3-30.
  */
-public class BaseProcess implements EventIntf {
+public class BaseProcess implements EventStep1Intf, EventStep2Intf{
 
+    //step1
     protected double simulation_clock;
-    protected double customer_total_stay_time;
+    protected double step1_total_stay_time;
 
     protected List<DiscreteEventVO> eventList;
 
@@ -23,9 +25,19 @@ public class BaseProcess implements EventIntf {
     protected int[] status;
     protected int customer_amount;
 
+    protected double step1StayTime;
+
+    //step2
+    protected List<CustomerVO> queue_process_2;
+
+    protected double step2_total_stay_time;
+    protected double step2StayTime;
+
+
     public BaseProcess() {
+        //step1
         this.simulation_clock = 0;
-        this.customer_total_stay_time = 0;
+        this.step1_total_stay_time = 0;
         this.customer_amount = 0;
 
         this.eventList = new ArrayList<DiscreteEventVO>();
@@ -36,6 +48,9 @@ public class BaseProcess implements EventIntf {
         this.status[0] = 0;
         this.status[1] = 0;
         this.status[2] = 0;
+
+        //step2
+        this.queue_process_2 = new ArrayList<>();
     }
 
     protected void timing() {
@@ -55,39 +70,115 @@ public class BaseProcess implements EventIntf {
         }
     }
 
-    protected void onService(CustomerVO c) {
-
-        DiscreteEventVO eventVO = new DiscreteEventVO();
-
-        eventVO.setType(2);
-        eventVO.setTime(simulation_clock + c.getServiceTime());
-        eventVO.setQueueNo(current.getQueueNo());
-
-        eventList.add(eventVO);
-    }
-
     protected void simulationStart() {
-        queueStart();
+        queueStep1Start();
 
         while (simulation_clock <= 5000) {
             timing();
             switch (current.getType()) {
                 case 1:
-                    arrival();
+                    arrivalStep1();
                     break;
                 case 2:
-                    departure();
+                    departureStep1();
+                    break;
+                case 3:
+                    departureStep2();
+                    break;
+                default:
                     break;
             }
         }
+    }
+
+    /**
+     * 过程一
+     */
+    //开始
+    @Override
+    public void queueStep1Start() {
+        //子类覆盖
+    }
+
+    //到达
+    @Override
+    public void arrivalStep1() {
+        //子类覆盖
+    }
+
+    //离开
+    @Override
+    public void departureStep1() {
+        //子类覆盖
+    }
+
+    //处理
+    @Override
+    public void onServiceStep1(CustomerVO c) {
+
+        DiscreteEventVO eventVO = new DiscreteEventVO();
+
+        eventVO.setType(2);
+        eventVO.setTime(simulation_clock + c.getStep1ServiceTime());
+        eventVO.setQueueNo(current.getQueueNo());
+
+        eventList.add(eventVO);
+    }
+
+    /**
+     * 过程二
+     */
+    //到达
+    @Override
+    public void arrivalStep2(CustomerVO c) {
+        DiscreteEventVO eventVO = new DiscreteEventVO();
+        eventVO.setType(3);
+        eventVO.setTime(simulation_clock);
+        eventList.add(eventVO);
+
+        c.setStatus(0);
+        queue_process_2.add(c);
+    }
+
+    //离开
+    @Override
+    public void departureStep2() {
+        if (queue_process_2.size() != 0) {
+            CustomerVO c = queue_process_2.get(0);
+            c.setStep2ServiceTime(MyRandomNum.getUnif(2.66, 3.33));
+
+            c.setStatus(2);
+            onServiceStep2(c);
+
+            step2StayTime = simulation_clock - c.getArrivalTime() + step1StayTime;
+            step2_total_stay_time += step2StayTime;
+
+            queue_process_2.remove(c);
+        }
+
+    }
+
+    //处理
+    @Override
+    public void onServiceStep2(CustomerVO c) {
+        DiscreteEventVO eventVO = new DiscreteEventVO();
+
+        eventVO.setType(3);
+        eventVO.setTime(simulation_clock + c.getStep2ServiceTime());
+
+        eventList.add(eventVO);
     }
 
     public ResultVO run() {
         simulationStart();
 
         ResultVO resultVO = new ResultVO(
-                customer_total_stay_time / customer_amount,
-                customer_total_stay_time,
+                step1_total_stay_time / customer_amount,
+                step1_total_stay_time,
+                step2_total_stay_time / customer_amount,
+                step2_total_stay_time,
+                (step1_total_stay_time + step2_total_stay_time) / customer_amount,
+                step1_total_stay_time + step2_total_stay_time,
                 customer_amount,
                 simulation_clock
         );
@@ -95,20 +186,5 @@ public class BaseProcess implements EventIntf {
         System.out.println(resultVO);
 
         return resultVO;
-    }
-
-    @Override
-    public void arrival() {
-
-    }
-
-    @Override
-    public void departure() {
-
-    }
-
-    @Override
-    public void queueStart() {
-
     }
 }

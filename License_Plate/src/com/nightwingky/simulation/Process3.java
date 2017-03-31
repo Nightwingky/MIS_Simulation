@@ -12,23 +12,23 @@ import java.util.List;
  */
 public class Process3 extends BaseProcess {
 
-    private List<CustomerVO>[] queue_process_3;
+    private List<CustomerVO>[] queue_step1_3;
 
     public Process3() {
-        this.queue_process_3 = new ArrayList[3];
-        this.queue_process_3[0] = new ArrayList<CustomerVO>();
-        this.queue_process_3[1] = new ArrayList<CustomerVO>();
-        this.queue_process_3[2] = new ArrayList<CustomerVO>();
+        this.queue_step1_3 = new ArrayList[3];
+        this.queue_step1_3[0] = new ArrayList<CustomerVO>();
+        this.queue_step1_3[1] = new ArrayList<CustomerVO>();
+        this.queue_step1_3[2] = new ArrayList<CustomerVO>();
     }
 
     @Override
-    public void arrival() {
-        super.arrival();
+    public void arrivalStep1() {
+        super.arrivalStep1();
 
         CustomerVO customerVO = new CustomerVO();
         customerVO.setArrivalTime(simulation_clock);
-        customerVO.setServiceTime(MyRandomNum.getUnif(8, 10));
-        queue_process_3[current.getQueueNo()].add(customerVO);
+        customerVO.setStep1ServiceTime(MyRandomNum.getUnif(8, 10));
+        queue_step1_3[current.getQueueNo()].add(customerVO);
 
         DiscreteEventVO nextArrival = new DiscreteEventVO();
         nextArrival.setType(1);
@@ -38,31 +38,34 @@ public class Process3 extends BaseProcess {
 
         if (status[current.getQueueNo()] == 0) {
             status[current.getQueueNo()] = 1;
-            onService(customerVO);
+            onServiceStep1(customerVO);
         }
     }
 
     @Override
-    public void departure() {
-        super.departure();
+    public void departureStep1() {
+        super.departureStep1();
 
-        CustomerVO c = queue_process_3[current.getQueueNo()].get(0);
-        queue_process_3[current.getQueueNo()].remove(0);
+        CustomerVO c = queue_step1_3[current.getQueueNo()].get(0);
+        queue_step1_3[current.getQueueNo()].remove(0);
 
-        customer_total_stay_time += simulation_clock - c.getArrivalTime();
+        step1StayTime = simulation_clock - c.getArrivalTime();
+        step1_total_stay_time += step1StayTime;
         customer_amount += 1;
 
-        if (queue_process_3[current.getQueueNo()].size() == 0)  {
+        if (queue_step1_3[current.getQueueNo()].size() == 0)  {
             status[current.getQueueNo()] = 0;
         } else {
-            c = queue_process_3[current.getQueueNo()].get(0);
-            onService(c);
+            c = queue_step1_3[current.getQueueNo()].get(0);
+            onServiceStep1(c);
+
+            this.arrivalStep2(c);
         }
     }
 
     @Override
-    public void queueStart() {
-        super.queueStart();
+    public void queueStep1Start() {
+        super.queueStep1Start();
 
         for (int i = 0; i < 3; i++) {
             DiscreteEventVO ent = new DiscreteEventVO();
