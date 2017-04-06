@@ -59,7 +59,7 @@ public class Process3 extends BaseProcess {
             c = queue_step1_3[current.getQueueNo()].get(0);
             onServiceStep1(c);
 
-            this.arrivalStep2(c);
+            this.arrivalStep2(current, c);
         }
     }
 

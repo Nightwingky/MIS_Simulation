@@ -73,7 +73,7 @@ public class Process1 extends BaseProcess{
             CustomerVO vo = queue_step1_1.get(0);
 
             //开启过程二
-            this.arrivalStep2(vo);
+            this.arrivalStep2(current, vo);
 
             queue_step1_1.remove(0);
         }

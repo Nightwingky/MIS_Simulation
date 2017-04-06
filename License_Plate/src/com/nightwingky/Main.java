@@ -62,12 +62,14 @@ public class Main {
     private static void run() throws IOException {
         List<ResultVO> resultList;
 
+        System.out.println("单对列");
         resultList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             resultList.add(new Process1().run());
         }
         output(resultList, "one.html");
 
+        System.out.println("三对列");
         resultList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             resultList.add(new Process3().run());

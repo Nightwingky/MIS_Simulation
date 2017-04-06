@@ -58,7 +58,8 @@ public class BaseProcess implements EventStep1Intf, EventStep2Intf{
         current = null;
 
         for (DiscreteEventVO eventVO : eventList) {
-            if (eventVO.getTime() < minTime) {
+
+            if (eventVO.getTime() <= minTime) {
                 minTime = eventVO.getTime();
                 current = eventVO;
             }
@@ -130,11 +131,10 @@ public class BaseProcess implements EventStep1Intf, EventStep2Intf{
      */
     //到达
     @Override
-    public void arrivalStep2(CustomerVO c) {
-        DiscreteEventVO eventVO = new DiscreteEventVO();
-        eventVO.setType(3);
-        eventVO.setTime(simulation_clock);
-        eventList.add(eventVO);
+    public void arrivalStep2(DiscreteEventVO event, CustomerVO c) {
+        event.setType(3);
+        event.setTime(c.getArrivalTime() + step1StayTime);
+        eventList.add(event);
 
         c.setStatus(0);
         queue_process_2.add(c);
@@ -150,9 +150,15 @@ public class BaseProcess implements EventStep1Intf, EventStep2Intf{
             c.setStatus(2);
             onServiceStep2(c);
 
+            // TODO: 17-3-31
+            System.out.print("step1StayTime:" + step1StayTime + " ");
+            System.out.print("simulation_clock:" + simulation_clock + " ");
+            System.out.print("getArrivalTime:" + c.getArrivalTime() + " ");
             step2StayTime = simulation_clock - c.getArrivalTime() + step1StayTime;
+            System.out.println("step2StayTime:" + step2StayTime);
             step2_total_stay_time += step2StayTime;
 
+            System.out.println(c);
             queue_process_2.remove(c);
         }
 
